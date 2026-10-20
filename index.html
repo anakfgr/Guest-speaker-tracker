@@ -1,0 +1,639 @@
+<meta charset="utf-8">
+<title>Digital Platforms Arcade</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: product-page rhythm. Frosted top nav, big centred hero, generous tiles on a soft grey ground, one session per tab. */
+:root {
+  --ground: #f5f5f7;
+  --card: #ffffff;
+  --ink: #1d1d1f;
+  --muted: #6e6e73;
+  --line: #d2d2d7;
+  --soft: #f0f0f3;
+  --accent: #0071e3;
+  --accent-ink: #ffffff;
+  --accent-soft: #e8f1fc;
+  --eyebrow: #bf4800;
+  --good: #1f7a36;
+  --good-soft: #e2f4e7;
+  --bad: #c9001a;
+  --bad-soft: #fde8ea;
+  --nav: rgba(245, 245, 247, 0.78);
+  --g1: #ff7a3d; --g2: #ef3e8b; --g3: #8a5cff;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r-lg: 28px; --r-md: 18px; --r-sm: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #000000; --card: #1c1c1e; --ink: #f5f5f7; --muted: #a1a1a6; --line: #38383a; --soft: #2c2c2e;
+    --accent: #2997ff; --accent-ink: #000000; --accent-soft: #0b2a4a; --eyebrow: #ff9f0a;
+    --good: #32d74b; --good-soft: #0e2e17; --bad: #ff6961; --bad-soft: #3a1416; --nav: rgba(22, 22, 23, 0.8); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #000000; --card: #1c1c1e; --ink: #f5f5f7; --muted: #a1a1a6; --line: #38383a; --soft: #2c2c2e;
+  --accent: #2997ff; --accent-ink: #000000; --accent-soft: #0b2a4a; --eyebrow: #ff9f0a;
+  --good: #32d74b; --good-soft: #0e2e17; --bad: #ff6961; --bad-soft: #3a1416; --nav: rgba(22, 22, 23, 0.8); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.47; letter-spacing: -0.022em; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1024px; margin: 0 auto; padding-left: max(22px, env(safe-area-inset-left, 0px)); padding-right: max(22px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3, h4 { margin: 0; font-weight: 700; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; letter-spacing: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.grad { background: linear-gradient(90deg, var(--g1), var(--g2) 50%, var(--g3)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.eyebrow { color: var(--eyebrow); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.label { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+
+/* Global nav */
+nav.global { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--nav); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid var(--line); }
+.navrow { display: flex; align-items: center; gap: 20px; height: 52px; }
+.brand { font-weight: 700; font-size: 17px; white-space: nowrap; background: none; border: 0; padding: 0; }
+.tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+.tabs > :first-child { margin-left: auto; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { flex: 0 0 auto; border: 0; background: none; padding: 6px 12px; border-radius: 980px; font-size: 13px; color: var(--muted); white-space: nowrap; letter-spacing: -0.01em; }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--ground); }
+.tab .soon { opacity: .6; }
+@media (max-width: 640px) { .brand { display: none; } .tabs > :first-child { margin-left: 0; } }
+
+main { padding-block: 0 80px; }
+.panel[hidden] { display: none !important; }
+
+/* Buttons */
+.btn { border: 1px solid var(--line); background: var(--card); padding: 10px 20px; border-radius: 980px; font-size: 15px; font-weight: 500; }
+.btn:hover { border-color: var(--ink); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn:disabled { opacity: .4; cursor: not-allowed; filter: none; }
+.btn.small { padding: 7px 14px; font-size: 14px; }
+.link { border: 0; background: none; color: var(--accent); padding: 10px 4px; font-size: 17px; }
+.link:hover { text-decoration: underline; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.spread { justify-content: space-between; }
+.center { justify-content: center; }
+
+/* Hero */
+.hero { text-align: center; padding-block: clamp(56px, 10vw, 112px) clamp(40px, 6vw, 64px); display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.hero h1 { font-size: clamp(44px, 8.5vw, 92px); line-height: 1.04; letter-spacing: -0.045em; }
+.hero .sub { font-size: clamp(19px, 2.4vw, 26px); color: var(--muted); max-width: 30ch; line-height: 1.3; letter-spacing: -0.02em; }
+.hero .row { margin-top: 10px; }
+.meter { width: min(320px, 100%); margin-top: 22px; display: grid; gap: 8px; }
+.meter-row { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.track { height: 6px; background: var(--soft); border-radius: 99px; overflow: hidden; }
+.fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--g1), var(--g2), var(--g3)); transition: width .5s ease; }
+
+/* Tiles */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.tile { background: var(--card); border-radius: var(--r-lg); padding: 28px; display: flex; flex-direction: column; gap: 8px; min-height: 230px; min-width: 0; border: 0; text-align: left; }
+.tile h3 { font-size: 26px; letter-spacing: -0.03em; line-height: 1.12; }
+.tile p { color: var(--muted); font-size: 15px; }
+.tile .foot { margin-top: auto; padding-top: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.tile.feature { grid-column: 1 / -1; min-height: 340px; background: #0b0b0d; color: #f5f5f7; padding: clamp(28px, 5vw, 56px); position: relative; overflow: hidden; justify-content: flex-end; }
+.tile.feature::before { content: ""; position: absolute; inset: -40% -10% auto auto; width: 70%; aspect-ratio: 1; max-width: 100%; border-radius: 50%;
+  background: radial-gradient(circle, rgba(239, 62, 139, .55), rgba(138, 92, 255, .25) 45%, transparent 70%); filter: blur(10px); pointer-events: none; }
+.tile.feature > * { position: relative; }
+.tile.feature .eyebrow { color: #ff9f0a; }
+.tile.feature h3 { font-size: clamp(32px, 5vw, 56px); letter-spacing: -0.04em; max-width: 14ch; }
+.tile.feature p { color: #a1a1a6; font-size: 17px; max-width: 46ch; }
+.tile.feature .btn { background: #f5f5f7; color: #0b0b0d; border-color: #f5f5f7; }
+.tile.feature .score { color: #a1a1a6; font-size: 14px; }
+.tile.soon h3 { color: var(--muted); }
+.pill { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 99px; background: var(--soft); color: var(--muted); white-space: nowrap; }
+.pill.done { background: var(--good-soft); color: var(--good); }
+.section-title { font-size: clamp(28px, 4vw, 40px); letter-spacing: -0.035em; margin-bottom: 20px; }
+
+/* Session */
+.s-hero { text-align: center; padding-block: clamp(48px, 8vw, 88px) 36px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.s-hero h2 { font-size: clamp(38px, 7vw, 72px); line-height: 1.05; letter-spacing: -0.045em; max-width: 14ch; }
+.s-hero .by { color: var(--muted); font-size: 19px; }
+.gamecard { background: var(--card); border-radius: var(--r-lg); padding: clamp(20px, 4vw, 44px); min-width: 0; }
+.gamecard-head { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+.gamecard-head h3 { font-size: clamp(26px, 3.4vw, 34px); letter-spacing: -0.035em; }
+.duo { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; margin-top: 16px; }
+@media (max-width: 760px) { .duo { grid-template-columns: 1fr; } }
+.duo > div { background: var(--card); border-radius: var(--r-lg); padding: clamp(22px, 3.5vw, 36px); min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.duo h4 { font-size: 22px; letter-spacing: -0.03em; }
+.takeaways { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 16px; }
+.takeaways li::marker { color: var(--muted); font-weight: 600; }
+textarea { width: 100%; min-height: 140px; resize: vertical; font: inherit; font-size: 16px; color: var(--ink); background: var(--soft); border: 1px solid transparent; border-radius: var(--r-sm); padding: 14px; }
+textarea:focus { border-color: var(--accent); outline: none; }
+.saved { font-size: 13px; color: var(--muted); min-height: 1.2em; }
+
+/* Coming soon */
+.soon-panel { text-align: center; padding-block: clamp(80px, 16vw, 180px); display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.soon-panel h2 { font-size: clamp(52px, 10vw, 112px); letter-spacing: -0.05em; line-height: 1; }
+.soon-panel p { color: var(--muted); font-size: 21px; max-width: 30ch; }
+
+/* Shared game pieces */
+.score-line { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.feedback { border-radius: var(--r-sm); padding: 14px 16px; font-size: 15.5px; }
+.feedback.good { background: var(--good-soft); }
+.feedback.bad { background: var(--bad-soft); }
+.feedback b { display: block; margin-bottom: 2px; }
+.feedback.good b { color: var(--good); }
+.feedback.bad b { color: var(--bad); }
+.q-text { font-size: clamp(21px, 2.6vw, 28px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.2; margin: 8px 0 20px; }
+.options { display: grid; gap: 10px; margin-bottom: 18px; }
+.opt { text-align: left; padding: 15px 18px; border: 1px solid var(--line); background: var(--card); border-radius: var(--r-md); display: flex; gap: 14px; align-items: start; font-size: 16px; }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt .k { font-size: 12px; font-weight: 700; color: var(--muted); background: var(--soft); border-radius: 6px; padding: 2px 7px; flex: 0 0 auto; margin-top: 2px; }
+.opt.right { background: var(--good-soft); border-color: var(--good); }
+.opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+.opt:disabled { cursor: default; }
+.result { text-align: center; padding: 28px 0 8px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.big { font-size: clamp(64px, 10vw, 96px); font-weight: 700; line-height: 1; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
+.result p { color: var(--muted); max-width: 44ch; }
+
+/* Rounds */
+.stagebar { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 28px; }
+.stage { border: 1px solid var(--line); background: var(--card); border-radius: var(--r-md); padding: 14px 16px; text-align: left; display: flex; flex-direction: column; gap: 4px; }
+.stage:hover { border-color: var(--ink); }
+.stage[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.stage b { font-size: 17px; font-weight: 600; }
+.stage .pill { align-self: flex-start; margin-top: 4px; }
+
+/* Sort */
+.pool { display: flex; flex-wrap: wrap; gap: 8px; min-height: 56px; padding: 14px; background: var(--soft); border-radius: var(--r-md); margin-bottom: 16px; }
+.pool:empty::after { content: "All placed. Check your answers below."; color: var(--muted); font-size: 14px; align-self: center; }
+.item { padding: 9px 14px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--card); font-size: 15px; font-weight: 500; text-align: left; touch-action: manipulation; user-select: none; }
+.item:hover { border-color: var(--ink); }
+.item[draggable="true"] { cursor: grab; }
+.item.sel { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.item.right { background: var(--good-soft); border-color: var(--good); }
+.item.wrong { background: var(--bad-soft); border-color: var(--bad); }
+.bins { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.bin { border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px; background: var(--card); min-height: 170px; display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.bin.ready { border-color: var(--accent); border-style: dashed; }
+.bin.over { background: var(--accent-soft); }
+.bin h4 { font-size: 19px; letter-spacing: -0.02em; }
+.bin h4.code { font-family: var(--mono); font-size: 16px; letter-spacing: 0; }
+.bin small { color: var(--muted); font-size: 13.5px; }
+.bin .items { display: flex; flex-wrap: wrap; gap: 6px; }
+.explain { display: grid; gap: 6px; font-size: 15px; margin-top: 16px; }
+.explain > div { padding: 10px 12px; border-radius: 10px; background: var(--soft); }
+
+/* Order */
+.seq { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 8px; }
+.seq li { display: flex; gap: 12px; align-items: center; }
+.seq .n { font-size: 13px; font-weight: 600; color: var(--muted); width: 20px; flex: 0 0 auto; text-align: right; font-variant-numeric: tabular-nums; }
+.seq .slot { flex: 1; min-height: 46px; border: 1px dashed var(--line); border-radius: var(--r-sm); padding: 10px 14px; color: var(--muted); font-size: 14px; display: flex; align-items: center; }
+.seq .step { flex: 1; text-align: left; border: 1px solid var(--line); background: var(--card); border-radius: var(--r-sm); padding: 11px 14px; font-size: 15.5px; font-weight: 500; }
+.seq .step.right { background: var(--good-soft); border-color: var(--good); }
+.seq .step.wrong { background: var(--bad-soft); border-color: var(--bad); }
+
+/* Memory, true/false, scenario (ready for future sessions) */
+.mem { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+@media (max-width: 520px) { .mem { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.mcard { aspect-ratio: 4/3; max-width: 100%; border-radius: var(--r-md); border: 0; background: var(--ink); color: var(--ground); padding: 10px; display: grid; place-items: center; text-align: center; font-size: 13.5px; line-height: 1.3; }
+.mcard .back { font-weight: 700; font-size: 22px; opacity: .5; }
+.mcard.up { background: var(--card); color: var(--ink); box-shadow: inset 0 0 0 2px var(--accent); }
+.mcard.term.up { font-weight: 600; font-size: 16px; }
+.mcard.matched { background: var(--good-soft); color: var(--ink); cursor: default; }
+.timer { height: 5px; background: var(--soft); border-radius: 99px; overflow: hidden; margin: 8px 0 4px; }
+.timer i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, var(--g1), var(--g2)); }
+.tf { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.tf .btn { padding: 16px; font-size: 19px; font-weight: 600; }
+.meters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
+@media (max-width: 520px) { .meters { grid-template-columns: 1fr; } }
+.stat { background: var(--soft); border-radius: var(--r-md); padding: 12px 14px; }
+.stat .v { font-weight: 700; font-size: 28px; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.delta { font-size: 13px; margin-left: 6px; } .delta.up { color: var(--good); } .delta.down { color: var(--bad); }
+
+footer { padding-block: 22px 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+
+<nav class="global" aria-label="Sessions">
+  <div class="wrap navrow">
+    <button class="brand" id="brand">Platforms Arcade</button>
+    <div class="tabs" role="tablist" id="tabs"></div>
+  </div>
+</nav>
+
+<main id="panels"></main>
+
+<footer>
+  <div class="wrap row spread">
+    <span>Digital Platforms · Guest speaker series. Scores and notes stay in this browser.</span>
+    <span id="resetZone"></span>
+  </div>
+</footer>
+
+<script>
+/* =====================================================================
+   SESSIONS. To add a new guest session, replace a { soon: true } entry
+   with a full session object like the 9 Oct one.
+   Game types: stages, order, sort, quiz, memory, truefalse, scenario.
+   ===================================================================== */
+const SESSIONS = [
+  {
+    id: "ll", n: 1, when: "9 Oct", short: "Vibe coding",
+    speaker: "Nirvan, Yibo & Rishabh", org: "LaunchLab × ESSEC",
+    topic: "Vibe coding: design, build, deploy.", gameName: "Ship It",
+    blurb: "Claude Design, Claude Code, GitHub and Vercel. Three rounds to lock in the full design → build → deploy loop.",
+    takeaways: [
+      "Design the front end first in Claude Design, then use “Handoff to Claude Code…” in the Share menu to turn it into a working site.",
+      "A strong prompt gives a role, goal, target audience, pages, design style and the output you expect.",
+      "GitHub stores, shares and versions your code. Vercel turns a repo into a live site and redeploys on every push.",
+      "Commit saves a snapshot locally, push uploads it, and a pull request asks teammates to review before merging.",
+      "index.html holds the content, styles.css the look, script.js the behaviour.",
+      "A static site forgets users and only knows its own files. A backend like Supabase adds logins and a database."
+    ],
+    game: { type: "stages", stages: [
+      { name: "Ship the site", game: { type: "order", intro: "Tap the steps in the order you'd do them, from first idea to a live site that updates itself.", steps: [
+        "Write a detailed prompt: role, goal, audience, pages, style, output",
+        "Design the front end visually in Claude Design",
+        "Open Share → “Handoff to Claude Code…”",
+        "Claude Code builds the real site files",
+        "Create a GitHub repo and let Claude Code commit and push",
+        "Import the repo into Vercel and click Deploy",
+        "Push new changes: Vercel rebuilds the live site automatically"
+      ]}},
+      { name: "Which file?", game: { type: "sort", bins: [
+        { key: "html", name: "index.html", hint: "The words and structure people read", code: true },
+        { key: "css", name: "styles.css", hint: "Colours, fonts, spacing, phone vs laptop", code: true },
+        { key: "js", name: "script.js", hint: "What happens on click, type or submit", code: true }
+      ], items: [
+        { n: "Change the text on the main button", b: "html", e: "Text and structure live in index.html." },
+        { n: "Make that button orange", b: "css", e: "Colours are styling, so styles.css." },
+        { n: "Make the button do something when clicked", b: "js", e: "Behaviour on click is script.js." },
+        { n: "Add a new paragraph about the course", b: "html", e: "New content goes in index.html." },
+        { n: "Change the font of every heading", b: "css", e: "Fonts are part of the look: styles.css." },
+        { n: "Show a thank-you message after submit", b: "js", e: "Reacting to submit is behaviour: script.js." },
+        { n: "Stack the layout into one column on phones", b: "css", e: "Responsive layout rules live in styles.css." },
+        { n: "Add a link to the Resources page", b: "html", e: "Links are part of the page structure: index.html." },
+        { n: "Run a countdown timer in a game", b: "js", e: "Anything that changes over time is script.js." },
+        { n: "Increase spacing between sections", b: "css", e: "Spacing is styling: styles.css." },
+        { n: "Add a new heading for Lesson 2", b: "html", e: "Headings are content: index.html." },
+        { n: "Check a quiz answer when someone types it", b: "js", e: "Checking input is behaviour: script.js." }
+      ]}},
+      { name: "Git & deploy", game: { type: "quiz", questions: [
+        { q: "You want your own copy of someone else's GitHub repo so you can change it without affecting theirs. You…", a: ["Clone it", "Fork it", "Merge it", "Push it"], c: 1, e: "A fork is your own copy on your GitHub account. Cloning copies a repo down to your computer." },
+        { q: "You just made a commit. Where is it saved?", a: ["On GitHub, for everyone to see", "On Vercel", "Only on your computer, until you push", "In Supabase"], c: 2, e: "A commit is a local snapshot with a note. Push sends it up to GitHub." },
+        { q: "You're working solo on your own branch and you're confident in the change. Best move?", a: ["Push directly", "Open a pull request and wait for review", "Fork your own repo", "Delete the branch"], c: 0, e: "Push is a direct action with no review. Pull requests are for team work or someone else's project." },
+        { q: "On a team project, you want teammates to check your changes before they reach the main version. You open a…", a: ["Commit", "Clone", "Pull request", "Token"], c: 2, e: "A pull request proposes changes so others can comment, suggest edits, approve or reject before merging." },
+        { q: "What is the difference between GitHub and Vercel?", a: ["They do the same thing", "GitHub stores your code; Vercel builds and hosts it as a live site", "Vercel stores code; GitHub hosts websites", "GitHub is only for teams"], c: 1, e: "GitHub holds every file and version. Vercel reads the repo, builds the site and gives it a public link." },
+        { q: "After connecting a repo to Vercel, how do you update your live site?", a: ["Upload a zip to Vercel each time", "Email the files to Vercel", "Push to GitHub. Vercel redeploys automatically", "Rebuild the project from scratch"], c: 2, e: "Vercel watches the repo. Every push triggers a new deploy within seconds." },
+        { q: "What does Vercel give every pull request?", a: ["Its own preview link", "A new domain name", "A Supabase database", "Nothing until merged"], c: 0, e: "Preview links let your team see the changes live before merging." },
+        { q: "Which prompt follows “the art of prompting” best?", a: ["“Create a website for my course”", "“Make a modern site with a homepage and lessons”", "A prompt that gives a role, goal, audience, required pages, design style and expected output", "“Make it look good”"], c: 2, e: "Detailed prompts with role, goal, audience, pages, style and outputs get far better results." },
+        { q: "When you log in, what does the site hand your browser so it doesn't ask for your password on every click?", a: ["A cookie recipe", "A token", "A fork", "A commit"], c: 1, e: "A token is a temporary pass the browser shows on each request. It expires on its own, and logging out throws it away." },
+        { q: "Your Wordle clone forgets every player when they close the tab. What fixes that?", a: ["More CSS", "A backend such as Supabase, with logins and a database", "Renaming index.html", "Opening a pull request"], c: 1, e: "A static site only knows its own files. Supabase adds authentication and a database for users and saved games." },
+        { q: "Which of these is Claude Code good at?", a: ["Only autocompleting single lines", "Reading whole codebases, running commands and debugging failures", "Hosting your website", "Storing your repo history"], c: 1, e: "Claude Code is agentic: it reads the project, runs shell commands and pipelines, and fixes errors." }
+      ]}}
+    ]}
+  },
+  { id: "s2", n: 2, soon: true },
+  { id: "s3", n: 3, soon: true },
+  { id: "s4", n: 4, soon: true },
+  { id: "s5", n: 5, soon: true },
+  { id: "s6", n: 6, soon: true }
+];
+const LIVE = SESSIONS.filter(s => !s.soon);
+
+/* ===================== Storage (safe) ===================== */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("dpa:" + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("dpa:" + k, JSON.stringify(v)); } catch (e) {} },
+  clear() { try { Object.keys(localStorage).filter(k => k.startsWith("dpa:")).forEach(k => localStorage.removeItem(k)); } catch (e) {} }
+};
+let progress = store.get("progress", {});
+const PARENT = {};
+LIVE.forEach(s => { if (s.game.type === "stages") s.game.stages.forEach((_, k) => PARENT[s.id + "-" + k] = s); });
+
+function recordScore(id, pct, label) {
+  const p = progress[id] || {};
+  progress[id] = { done: true, best: Math.max(p.best || 0, pct), label: pct >= (p.best || 0) ? label : p.label };
+  const parent = PARENT[id];
+  if (parent) {
+    const kids = parent.game.stages.map((_, k) => progress[parent.id + "-" + k]);
+    if (kids.every(k => k && k.done)) progress[parent.id] = { done: true, best: Math.round(kids.reduce((a, k) => a + k.best, 0) / kids.length), label: "All rounds" };
+  }
+  store.set("progress", progress);
+  refreshStatus();
+}
+
+/* ===================== Helpers ===================== */
+const $ = (sel, root = document) => root.querySelector(sel);
+function h(tag, attrs = {}, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") el.className = v;
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (k === "html") el.innerHTML = v;
+    else if (v !== false && v != null) el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const kid of kids.flat()) if (kid != null && kid !== false && kid !== "") el.append(kid.nodeType ? kid : document.createTextNode(kid));
+  return el;
+}
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function verdict(pct) { return pct >= 85 ? "Excellent. You've got this one locked in." : pct >= 60 ? "Solid. Skim the takeaways and go again to beat your score." : "Worth another look. Read the takeaways below, then replay."; }
+function result(container, pct, title, msg, onRetry) {
+  container.replaceChildren(h("div", { class: "result" },
+    h("div", { class: "label" }, title),
+    h("div", { class: "big grad" }, pct + "%"),
+    h("p", {}, msg),
+    h("div", { class: "row center" },
+      h("button", { class: "btn primary", onclick: onRetry }, "Play again"),
+      container._next ? h("button", { class: "btn", onclick: container._next }, "Next round") : null)));
+}
+const nextBtn = box => box._next ? h("button", { class: "btn", onclick: box._next }, "Next round") : null;
+
+/* ===================== Games ===================== */
+const GAMES = {
+  stages(box, s) {
+    const area = h("div", { class: "game-box" });
+    const btns = s.game.stages.map((st, k) => h("button", { class: "stage", "aria-pressed": "false", onclick: () => open(k) },
+      h("span", { class: "label" }, `Round ${k + 1}`), h("b", {}, st.name), h("span", { class: "pill", "data-best": s.id + "-" + k }, "")));
+    function open(k) {
+      btns.forEach((b, j) => b.setAttribute("aria-pressed", j === k));
+      area.onkeydown = null;
+      area._next = () => open((k + 1) % btns.length);
+      GAMES[s.game.stages[k].game.type](area, { id: s.id + "-" + k, game: s.game.stages[k].game });
+    }
+    box.replaceChildren(h("div", { class: "stagebar", role: "group", "aria-label": "Rounds" }, btns), area);
+    open(0);
+  },
+
+  order(box, s) {
+    const g = s.game; const pool = shuffle(g.steps); const seq = []; let checked = false;
+    const status = h("div", { class: "score-line", style: "margin-bottom:12px" });
+    const list = h("ol", { class: "seq", "aria-label": "Your order" });
+    const poolEl = h("div", { class: "pool", "aria-label": "Steps to place" });
+    const checkBtn = h("button", { class: "btn primary", onclick: check }, "Check order");
+    const out = h("div", { style: "display:grid;gap:12px;margin-top:14px" });
+    function draw() {
+      list.replaceChildren(...g.steps.map((_, k) => h("li", {}, h("span", { class: "n" }, k + 1),
+        seq[k] ? h("button", { class: "step" + (checked ? (seq[k] === g.steps[k] ? " right" : " wrong") : ""), onclick: () => { if (checked) return; seq.splice(k, 1); draw(); } }, seq[k])
+               : h("span", { class: "slot" }, k === seq.length ? "Tap a step below to place it here" : ""))));
+      poolEl.replaceChildren(...pool.filter(p => !seq.includes(p)).map(p => h("button", { class: "item", onclick: () => { if (!checked) { seq.push(p); draw(); } } }, p)));
+      poolEl.hidden = checked;
+      checkBtn.disabled = seq.length < g.steps.length || checked;
+      status.textContent = checked ? "" : `${seq.length} of ${g.steps.length} placed · tap a placed step to take it back out`;
+    }
+    function check() {
+      checked = true; draw();
+      const right = seq.filter((p, k) => p === g.steps[k]).length; const pct = Math.round(right / g.steps.length * 100);
+      recordScore(s.id, pct, `${right}/${g.steps.length}`);
+      checkBtn.replaceWith(h("div", { class: "row" }, h("button", { class: "btn primary", onclick: () => GAMES.order(box, s) }, "Play again"), nextBtn(box)));
+      out.replaceChildren(h("div", { class: "feedback " + (pct >= 60 ? "good" : "bad") }, h("b", {}, `${right} of ${g.steps.length} in the right place (${pct}%)`),
+        right === g.steps.length ? "Perfect. That's the full design → build → deploy loop." : "Green steps are in the right spot. Here's the correct order:"),
+        right === g.steps.length ? null : h("ol", { class: "takeaways" }, g.steps.map(t => h("li", {}, t))));
+    }
+    box.replaceChildren(g.intro ? h("p", { style: "color:var(--muted);margin-bottom:14px" }, g.intro) : "", status, list, poolEl, h("div", { class: "row" }, checkBtn), out);
+    draw();
+  },
+
+  quiz(box, s) {
+    const qs = shuffle(s.game.questions); let i = 0, score = 0;
+    function render() {
+      if (i >= qs.length) { const pct = Math.round(score / qs.length * 100); recordScore(s.id, pct, `${score}/${qs.length}`); return result(box, pct, `${score} of ${qs.length} correct`, verdict(pct), () => GAMES.quiz(box, s)); }
+      const q = qs[i]; let answered = false;
+      const fb = h("div");
+      const next = h("button", { class: "btn primary", hidden: true, onclick: () => { i++; render(); } }, i === qs.length - 1 ? "See results" : "Next question");
+      const opts = q.a.map((t, k) => h("button", { class: "opt", onclick: () => pick(k) }, h("span", { class: "k" }, "ABCD"[k]), h("span", {}, t)));
+      const scoreEl = h("div", { class: "score-line" }, `Question ${i + 1} of ${qs.length} · Score ${score}`);
+      function pick(k) {
+        if (answered) return; answered = true;
+        const ok = k === q.c; if (ok) score++;
+        opts.forEach((o, j) => { o.disabled = true; if (j === q.c) o.classList.add("right"); else if (j === k) o.classList.add("wrong"); });
+        fb.replaceWith(h("div", { class: "feedback " + (ok ? "good" : "bad") }, h("b", {}, ok ? "Correct" : "Not quite"), q.e));
+        next.hidden = false; next.focus();
+        scoreEl.textContent = `Question ${i + 1} of ${qs.length} · Score ${score}`;
+      }
+      box.replaceChildren(scoreEl, h("div", { class: "q-text" }, q.q), h("div", { class: "options" }, opts),
+        h("div", { style: "display:grid;gap:14px" }, fb, h("div", { class: "row" }, next)));
+      box.onkeydown = e => { const k = "abcd".indexOf(e.key.toLowerCase()); if (k >= 0 && k < q.a.length && !e.target.matches("textarea")) pick(k); };
+    }
+    render();
+  },
+
+  sort(box, s) {
+    const g = s.game; const place = {}; let selected = null, checked = false;
+    const items = shuffle(g.items);
+    const pool = h("div", { class: "pool", "aria-label": "Items to sort" });
+    const binEls = {};
+    const checkBtn = h("button", { class: "btn primary", disabled: true, onclick: check }, "Check answers");
+    const explain = h("div", { class: "explain" });
+    const status = h("div", { class: "score-line", style: "margin-bottom:12px" });
+    function chip(it) {
+      const c = h("button", { class: "item", draggable: "true", "data-n": it.n }, it.n);
+      c.addEventListener("click", e => {
+        e.stopPropagation(); if (checked) return;
+        if (place[it.n]) { delete place[it.n]; selected = null; draw(); return; }
+        selected = selected === it.n ? null : it.n; draw();
+      });
+      c.addEventListener("dragstart", e => { if (checked) return e.preventDefault(); e.dataTransfer.setData("text/plain", it.n); selected = it.n; });
+      return c;
+    }
+    function drop(key, n) { if (checked || !n) return; place[n] = key; selected = null; draw(); }
+    const bins = h("div", { class: "bins" }, g.bins.map(b => {
+      const list = h("div", { class: "items" });
+      const el = h("div", { class: "bin", role: "button", tabindex: "0", "aria-label": "Place selected item in " + b.name },
+        h("h4", { class: b.code ? "code" : "" }, b.name), h("small", {}, b.hint), list);
+      el.addEventListener("click", () => drop(b.key, selected));
+      el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); drop(b.key, selected); } });
+      el.addEventListener("dragover", e => { e.preventDefault(); el.classList.add("over"); });
+      el.addEventListener("dragleave", () => el.classList.remove("over"));
+      el.addEventListener("drop", e => { e.preventDefault(); el.classList.remove("over"); drop(b.key, e.dataTransfer.getData("text/plain")); });
+      binEls[b.key] = { el, list }; return el;
+    }));
+    function draw() {
+      pool.replaceChildren(...items.filter(it => !place[it.n]).map(chip));
+      for (const k in binEls) binEls[k].list.replaceChildren(...items.filter(it => place[it.n] === k).map(it => {
+        const c = chip(it); if (checked) c.classList.add(it.b === k ? "right" : "wrong"); return c; }));
+      box.querySelectorAll(".item").forEach(c => c.classList.toggle("sel", c.dataset.n === selected));
+      for (const k in binEls) binEls[k].el.classList.toggle("ready", !!selected && !checked);
+      const placed = Object.keys(place).length;
+      checkBtn.disabled = placed < items.length || checked;
+      status.textContent = checked ? "" : `${placed} of ${items.length} placed · tap an item, then tap a column (or drag it). Tap a placed item to send it back.`;
+    }
+    function check() {
+      checked = true; draw();
+      const right = items.filter(it => place[it.n] === it.b).length;
+      const pct = Math.round(right / items.length * 100);
+      recordScore(s.id, pct, `${right}/${items.length}`);
+      checkBtn.replaceWith(h("div", { class: "row" }, h("button", { class: "btn primary", onclick: () => GAMES.sort(box, s) }, "Play again"), nextBtn(box)));
+      explain.replaceChildren(h("div", { class: "feedback " + (pct >= 60 ? "good" : "bad") }, h("b", {}, `${right} of ${items.length} correct (${pct}%)`), verdict(pct)),
+        ...items.map(it => h("div", {}, h("b", {}, (place[it.n] === it.b ? "✓ " : "✗ ") + it.n + ": "), it.e)));
+    }
+    box.replaceChildren(status, pool, bins, h("div", { class: "row" }, checkBtn), explain);
+    draw();
+  },
+
+  memory(box, s) {
+    const pairs = s.game.pairs;
+    const cards = shuffle(pairs.flatMap((p, i) => [{ id: i, text: p[0], term: true }, { id: i, text: p[1], term: false }]));
+    let open = [], matched = new Set(), moves = 0, lock = false;
+    const status = h("div", { class: "score-line", style: "margin-bottom:12px" });
+    const els = cards.map((c, idx) => h("button", { class: "mcard" + (c.term ? " term" : ""), "aria-label": "Hidden card", onclick: () => flip(idx) }, h("span", { class: "back" }, "?")));
+    function show(idx, up) { const el = els[idx]; el.classList.toggle("up", up); el.replaceChildren(up ? h("span", {}, cards[idx].text) : h("span", { class: "back" }, "?")); el.setAttribute("aria-label", up ? cards[idx].text : "Hidden card"); }
+    function flip(idx) {
+      if (lock || open.includes(idx) || matched.has(cards[idx].id)) return;
+      show(idx, true); open.push(idx);
+      if (open.length === 2) {
+        moves++; const [a, b] = open;
+        if (cards[a].id === cards[b].id) { matched.add(cards[a].id); [a, b].forEach(i => { els[i].classList.add("matched"); els[i].classList.remove("up"); }); open = []; if (matched.size === pairs.length) return finish(); }
+        else { lock = true; setTimeout(() => { show(a, false); show(b, false); open = []; lock = false; update(); }, 1000); }
+      }
+      update();
+    }
+    function update() { status.textContent = `Pairs ${matched.size} of ${pairs.length} · Moves ${moves}`; }
+    function finish() { update(); const pct = Math.max(30, Math.round(100 - Math.max(0, moves - pairs.length) * 5)); recordScore(s.id, pct, `${moves} moves`);
+      setTimeout(() => result(box, pct, `All pairs found in ${moves} moves`, verdict(pct), () => GAMES.memory(box, s)), 600); }
+    update();
+    box.replaceChildren(status, h("div", { class: "mem" }, els), h("div", { class: "row" }, h("button", { class: "btn small", onclick: () => GAMES.memory(box, s) }, "Shuffle and restart")));
+  },
+
+  truefalse(box, s) {
+    const g = s.game; const items = shuffle(g.items); let i = 0, score = 0, timer = null;
+    function render() {
+      clearInterval(timer);
+      if (i >= items.length) { const pct = Math.round(score / items.length * 100); recordScore(s.id, pct, `${score}/${items.length}`); return result(box, pct, `${score} of ${items.length} correct`, verdict(pct), () => GAMES.truefalse(box, s)); }
+      const it = items[i]; let done = false, left = g.seconds * 10;
+      const bar = h("i"), fb = h("div");
+      const next = h("button", { class: "btn primary", hidden: true, onclick: () => { i++; render(); } }, i === items.length - 1 ? "See results" : "Next");
+      const tBtn = h("button", { class: "btn", onclick: () => answer(true) }, "True"), fBtn = h("button", { class: "btn", onclick: () => answer(false) }, "False");
+      function answer(v) {
+        if (done) return; done = true; clearInterval(timer);
+        const ok = v === it.t; if (ok) score++;
+        tBtn.disabled = fBtn.disabled = true; (it.t ? tBtn : fBtn).classList.add("primary");
+        fb.replaceWith(h("div", { class: "feedback " + (ok ? "good" : "bad") }, h("b", {}, v === null ? "Time's up" : ok ? "Correct" : "Not quite"), it.e));
+        next.hidden = false; next.focus();
+      }
+      box.replaceChildren(h("div", { class: "score-line" }, `Statement ${i + 1} of ${items.length} · Score ${score}`), h("div", { class: "timer" }, bar),
+        h("div", { class: "q-text" }, it.s), h("div", { class: "tf" }, tBtn, fBtn), h("div", { style: "display:grid;gap:14px" }, fb, h("div", { class: "row" }, next)));
+      timer = setInterval(() => { if (!box.isConnected || box.closest(".panel").hidden) return; left--; bar.style.width = (left / (g.seconds * 10) * 100) + "%"; if (left <= 0) answer(null); }, 100);
+    }
+    box.replaceChildren(h("div", { class: "result" }, h("p", {}, `${items.length} statements, ${g.seconds} seconds each.`), h("button", { class: "btn primary", onclick: render }, "Start")));
+  },
+
+  scenario(box, s) {
+    const g = s.game; let i = 0; const m = [50, 50, 50]; const names = g.meters || ["Users", "Revenue", "Trust"];
+    const bestTotal = g.steps.reduce((a, st) => a + Math.max(...st.o.map(o => o.d[0] + o.d[1] + o.d[2])), 0);
+    const meters = () => h("div", { class: "meters" }, names.map((n, k) => h("div", { class: "stat" }, h("div", { class: "label" }, n), h("div", { class: "v" }, m[k]))));
+    function render(fb) {
+      if (i >= g.steps.length && !fb) { const pct = Math.max(0, Math.min(100, Math.round((m[0] + m[1] + m[2] - 150) / bestTotal * 100))); recordScore(s.id, pct, "Scenario"); return result(box, pct, "Your rating", verdict(pct), () => GAMES.scenario(box, s)); }
+      if (fb) return box.replaceChildren(meters(), h("div", { class: "feedback " + (fb.good ? "good" : "bad"), style: "margin-bottom:14px" }, h("b", {}, fb.good ? "Strong call" : "Trade-off"), fb.f), h("button", { class: "btn primary", onclick: () => render() }, "Continue"));
+      const st = g.steps[i];
+      box.replaceChildren(meters(), h("div", { class: "q-text" }, st.q), h("div", { class: "options" }, st.o.map((o, k) => h("button", { class: "opt", onclick: () => {
+        o.d.forEach((d, j) => m[j] += d); i++; const best = Math.max(...st.o.map(x => x.d[0] + x.d[1] + x.d[2])); render({ f: o.f, good: o.d[0] + o.d[1] + o.d[2] === best }); } }, h("span", { class: "k" }, "ABC"[k]), h("span", {}, o.t)))));
+    }
+    render();
+  }
+};
+
+/* ===================== Shell ===================== */
+const tabsEl = $("#tabs"), panelsEl = $("#panels");
+const ids = ["home", ...SESSIONS.map(s => s.id)];
+
+function buildTabs() {
+  tabsEl.replaceChildren(
+    h("button", { class: "tab", role: "tab", id: "tab-home", "aria-controls": "panel-home", "data-id": "home", onclick: () => go("home") }, "Overview"),
+    ...SESSIONS.map(s => h("button", { class: "tab", role: "tab", id: "tab-" + s.id, "aria-controls": "panel-" + s.id, "data-id": s.id, onclick: () => go(s.id) },
+      s.soon ? h("span", {}, `Session ${s.n} `, h("span", { class: "soon" }, "· Soon")) : `${s.when} · ${s.short}`)));
+}
+
+function buildHome() {
+  const latest = LIVE[LIVE.length - 1];
+  panelsEl.append(h("section", { class: "panel", id: "panel-home", role: "tabpanel", "aria-labelledby": "tab-home" },
+    h("div", { class: "wrap hero" },
+      h("div", { class: "eyebrow" }, "Digital Platforms · Guest speaker series"),
+      h("h1", {}, "Learn it. ", h("span", { class: "grad" }, "Play it.")),
+      h("p", { class: "sub" }, "Every guest session this semester, turned into a game."),
+      h("div", { class: "row center" },
+        h("button", { class: "btn primary", onclick: () => go(latest.id) }, "Play the latest session"),
+        h("button", { class: "link", onclick: () => $("#sessions").scrollIntoView({ behavior: "smooth" }) }, "See all sessions ›")),
+      h("div", { class: "meter", "aria-live": "polite" },
+        h("div", { class: "meter-row" }, h("span", {}, "Sessions completed"), h("span", { id: "meterNum" }, "")),
+        h("div", { class: "track" }, h("div", { class: "fill", id: "meterFill", style: "width:0%" })))),
+    h("div", { class: "wrap", id: "sessions" }, h("h2", { class: "section-title" }, "The sessions."), h("div", { class: "tiles", id: "tiles" }))));
+}
+function drawTiles() {
+  $("#tiles").replaceChildren(...SESSIONS.map(s => {
+    if (s.soon) return h("button", { class: "tile soon", onclick: () => go(s.id) },
+      h("div", { class: "label" }, `Session ${s.n}`), h("h3", {}, "Coming soon."), h("p", {}, "The game unlocks after the talk."),
+      h("div", { class: "foot" }, h("span", { class: "pill" }, "Not yet held")));
+    const p = progress[s.id];
+    return h("div", { class: "tile feature" },
+      h("div", { class: "eyebrow" }, `Session ${s.n} · ${s.when} · ${s.org}`),
+      h("h3", {}, s.topic),
+      h("p", {}, s.blurb),
+      h("div", { class: "foot" }, h("button", { class: "btn", onclick: () => go(s.id) }, p && p.done ? "Play again" : "Play now"),
+        h("span", { class: "score" }, p && p.done ? `Best score ${p.best}%` : `${s.game.stages ? s.game.stages.length + " rounds" : "1 game"} · about 10 minutes`)));
+  }));
+}
+
+function buildSession(s) {
+  if (s.soon) {
+    panelsEl.append(h("section", { class: "panel", id: "panel-" + s.id, role: "tabpanel", "aria-labelledby": "tab-" + s.id, hidden: true },
+      h("div", { class: "wrap soon-panel" },
+        h("div", { class: "eyebrow" }, `Session ${s.n}`),
+        h("h2", { class: "grad" }, "Coming soon."),
+        h("p", {}, "This guest session hasn't happened yet. Its game will appear here after the talk."),
+        h("div", { class: "row center" }, h("button", { class: "btn primary", onclick: () => go(LIVE[0].id) }, `Play the ${LIVE[0].when} session`)))));
+    return;
+  }
+  const box = h("div", { class: "game-box", "data-sid": s.id });
+  const note = h("textarea", { id: "note-" + s.id, placeholder: "One idea from this talk I want to remember…" });
+  note.value = store.get("note:" + s.id, "");
+  const saved = h("div", { class: "saved", "aria-live": "polite" });
+  let t; note.addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => { store.set("note:" + s.id, note.value); saved.textContent = "Saved"; setTimeout(() => saved.textContent = "", 1500); }, 400); });
+  panelsEl.append(h("section", { class: "panel", id: "panel-" + s.id, role: "tabpanel", "aria-labelledby": "tab-" + s.id, hidden: true },
+    h("div", { class: "wrap" },
+      h("div", { class: "s-hero" },
+        h("div", { class: "eyebrow" }, `Session ${s.n} · ${s.when}`),
+        h("h2", {}, s.topic),
+        h("p", { class: "by" }, `${s.speaker} · ${s.org}`)),
+      h("div", { class: "gamecard" },
+        h("div", { class: "gamecard-head" },
+          h("div", {}, h("div", { class: "label" }, "The game"), h("h3", {}, s.gameName)),
+          h("span", { class: "pill", "data-best": s.id }, "")),
+        box),
+      h("div", { class: "duo" },
+        h("div", {}, h("h4", {}, "Key takeaways."), h("ol", { class: "takeaways" }, s.takeaways.map(x => h("li", {}, x)))),
+        h("div", {}, h("label", { for: "note-" + s.id }, h("h4", {}, "My reflection.")), note, saved)))));
+  GAMES[s.game.type](box, s);
+}
+
+function refreshStatus() {
+  const done = LIVE.filter(s => progress[s.id] && progress[s.id].done).length;
+  $("#meterNum").textContent = `${done} of ${LIVE.length} available`;
+  $("#meterFill").style.width = (done / LIVE.length * 100) + "%";
+  document.querySelectorAll("[data-best]").forEach(c => { const p = progress[c.dataset.best]; c.textContent = p && p.done ? `Best ${p.best}%` : "Not played"; c.classList.toggle("done", !!(p && p.done)); });
+  drawTiles();
+}
+
+function go(id) {
+  if (!ids.includes(id)) id = "home";
+  document.querySelectorAll(".panel").forEach(p => p.hidden = p.id !== "panel-" + id);
+  document.querySelectorAll(".tab").forEach(t => { const on = t.dataset.id === id; t.setAttribute("aria-selected", on); t.tabIndex = on ? 0 : -1; if (on) t.scrollIntoView({ block: "nearest", inline: "nearest" }); });
+  try { history.replaceState(null, "", "#" + id); } catch (e) {}
+  store.set("tab", id);
+  window.scrollTo({ top: 0 });
+}
+$("#brand").addEventListener("click", () => go("home"));
+tabsEl.addEventListener("keydown", e => {
+  if (!["ArrowRight", "ArrowLeft"].includes(e.key)) return;
+  const cur = ids.indexOf(document.activeElement.dataset.id); if (cur < 0) return;
+  const n = ids[(cur + (e.key === "ArrowRight" ? 1 : ids.length - 1)) % ids.length]; go(n); $("#tab-" + n).focus();
+});
+
+function resetButton() {
+  const zone = $("#resetZone");
+  zone.replaceChildren(h("button", { class: "btn small", onclick: () => zone.replaceChildren(h("span", { class: "row" }, "Clear all scores and notes?",
+    h("button", { class: "btn small primary", onclick: () => { store.clear(); progress = {}; rebuild(); } }, "Yes, reset"),
+    h("button", { class: "btn small", onclick: resetButton }, "Cancel"))) }, "Reset progress"));
+}
+
+function rebuild() {
+  panelsEl.replaceChildren();
+  buildTabs(); buildHome(); SESSIONS.forEach(buildSession); refreshStatus(); resetButton();
+  const hash = location.hash.replace("#", "");
+  go(ids.includes(hash) ? hash : store.get("tab", "home"));
+}
+rebuild();
+</script>
