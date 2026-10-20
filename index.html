@@ -123,6 +123,42 @@ textarea { width: 100%; min-height: 140px; resize: vertical; font: inherit; font
 textarea:focus { border-color: var(--accent); outline: none; }
 .saved { font-size: 13px; color: var(--muted); min-height: 1.2em; }
 
+/* Slides or games */
+.choice { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.choose { background: var(--card); border: 0; border-radius: var(--r-lg); padding: clamp(18px, 3vw, 28px); text-align: left; display: flex; flex-direction: column; gap: 8px; min-width: 0; transition: transform .2s ease, box-shadow .2s ease; }
+.choose:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(0, 0, 0, .08); }
+.choose h3 { font-size: clamp(26px, 3.4vw, 34px); letter-spacing: -0.035em; }
+.choose p { color: var(--muted); font-size: 16px; }
+.choose .art { aspect-ratio: 16 / 9; max-width: 100%; border-radius: var(--r-md); overflow: hidden; margin-bottom: 10px; background: var(--soft); }
+.choose .art .slideimg { height: 100%; }
+.choose .art.games { background: #0b0b0d; color: #f5f5f7; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; padding: 18px; position: relative; }
+.choose .art.games::before { content: ""; position: absolute; inset: -30% -20% auto auto; width: 75%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(239, 62, 139, .55), rgba(138, 92, 255, .25) 45%, transparent 70%); }
+.choose .art.games span { position: relative; font-size: clamp(15px, 2vw, 19px); font-weight: 600; letter-spacing: -0.02em; }
+.choose .art.games span i { font-style: normal; color: #a1a1a6; font-weight: 500; margin-right: 8px; font-variant-numeric: tabular-nums; }
+.segrow { display: flex; justify-content: center; margin-bottom: 22px; }
+.seg { display: inline-flex; background: var(--soft); border-radius: 980px; padding: 3px; }
+.seg button { border: 0; background: none; padding: 8px 26px; border-radius: 980px; font-size: 15px; font-weight: 500; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 4px rgba(0, 0, 0, .14); }
+.viewer { background: var(--card); border-radius: var(--r-lg); padding: clamp(12px, 3vw, 28px); min-width: 0; }
+.screen { position: relative; aspect-ratio: 16 / 9; max-width: 100%; background: #000; border-radius: var(--r-md); overflow: hidden; touch-action: pan-y; }
+.screen { display: grid; place-items: center; }
+.slideimg { width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background-repeat: no-repeat; background-color: #fff; }
+.screen:fullscreen .slideimg { width: min(100vw, 177.78vh); }
+.screen:fullscreen { border-radius: 0; }
+.navbtn { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(0, 0, 0, .5); color: #fff; font-size: 24px; line-height: 1; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.navbtn.prev { left: 12px; } .navbtn.next { right: 12px; }
+.navbtn:disabled { opacity: .2; cursor: default; }
+.vbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin: 16px 0 14px; }
+.count { font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.count b { color: var(--ink); }
+.thumbs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; }
+.thumbs button { flex: 0 0 112px; aspect-ratio: 16 / 9; padding: 0; border: 2px solid transparent; border-radius: 9px; overflow: hidden; background: var(--soft); opacity: .7; }
+.thumbs button:hover { opacity: 1; }
+.thumbs button[aria-current="true"] { border-color: var(--accent); opacity: 1; }
+.thumbs .slideimg { height: 100%; }
+a.btn { text-decoration: none; color: inherit; display: inline-block; }
+.tile.feature .btn.ghost { background: transparent; color: #f5f5f7; border-color: rgba(245, 245, 247, .4); }
+
 /* Coming soon */
 .soon-panel { text-align: center; padding-block: clamp(80px, 16vw, 180px); display: flex; flex-direction: column; align-items: center; gap: 16px; }
 .soon-panel h2 { font-size: clamp(52px, 10vw, 112px); letter-spacing: -0.05em; line-height: 1; }
@@ -234,7 +270,8 @@ const SESSIONS = [
     id: "ll", n: 1, when: "9 Oct", short: "Vibe coding",
     speaker: "Nirvan, Yibo & Rishabh", org: "LaunchLab × ESSEC",
     topic: "Vibe coding: design, build, deploy.", gameName: "Ship It",
-    blurb: "Claude Design, Claude Code, GitHub and Vercel. Three rounds to lock in the full design → build → deploy loop.",
+    blurb: "Claude Design, Claude Code, GitHub and Vercel. Revise the 31 slides, then play three rounds to lock in the full design → build → deploy loop.",
+    slides: { dir: "slides/vibe-coding", count: 31, perSheet: 8, pdf: "slides/vibe-coding/vibe-coding-9-oct.pdf" },
     takeaways: [
       "Design the front end first in Claude Design, then use “Handoff to Claude Code…” in the Share menu to turn it into a working site.",
       "A strong prompt gives a role, goal, target audience, pages, design style and the output you expect.",
@@ -533,7 +570,7 @@ const ids = ["home", ...SESSIONS.map(s => s.id)];
 function buildTabs() {
   tabsEl.replaceChildren(
     h("button", { class: "tab", role: "tab", id: "tab-home", "aria-controls": "panel-home", "data-id": "home", onclick: () => go("home") }, "Overview"),
-    ...SESSIONS.map(s => h("button", { class: "tab", role: "tab", id: "tab-" + s.id, "aria-controls": "panel-" + s.id, "data-id": s.id, onclick: () => go(s.id) },
+    ...SESSIONS.map(s => h("button", { class: "tab", role: "tab", id: "tab-" + s.id, "aria-controls": "panel-" + s.id, "data-id": s.id, onclick: () => go(s.id, null) },
       s.soon ? h("span", {}, `Session ${s.n} `, h("span", { class: "soon" }, "· Soon")) : `${s.when} · ${s.short}`)));
 }
 
@@ -545,7 +582,7 @@ function buildHome() {
       h("h1", {}, "Learn it. ", h("span", { class: "grad" }, "Play it.")),
       h("p", { class: "sub" }, "Every guest session this semester, turned into a game."),
       h("div", { class: "row center" },
-        h("button", { class: "btn primary", onclick: () => go(latest.id) }, "Play the latest session"),
+        h("button", { class: "btn primary", onclick: () => go(latest.id, null) }, "Open the latest session"),
         h("button", { class: "link", onclick: () => $("#sessions").scrollIntoView({ behavior: "smooth" }) }, "See all sessions ›")),
       h("div", { class: "meter", "aria-live": "polite" },
         h("div", { class: "meter-row" }, h("span", {}, "Sessions completed"), h("span", { id: "meterNum" }, "")),
@@ -562,7 +599,9 @@ function drawTiles() {
       h("div", { class: "eyebrow" }, `Session ${s.n} · ${s.when} · ${s.org}`),
       h("h3", {}, s.topic),
       h("p", {}, s.blurb),
-      h("div", { class: "foot" }, h("button", { class: "btn", onclick: () => go(s.id) }, p && p.done ? "Play again" : "Play now"),
+      h("div", { class: "foot" },
+        s.slides ? h("button", { class: "btn", onclick: () => go(s.id, "slides") }, "View slides") : null,
+        h("button", { class: "btn" + (s.slides ? " ghost" : ""), onclick: () => go(s.id, "games") }, p && p.done ? "Play again" : "Play the games"),
         h("span", { class: "score" }, p && p.done ? `Best score ${p.best}%` : `${s.game.stages ? s.game.stages.length + " rounds" : "1 game"} · about 10 minutes`)));
   }));
 }
@@ -574,7 +613,7 @@ function buildSession(s) {
         h("div", { class: "eyebrow" }, `Session ${s.n}`),
         h("h2", { class: "grad" }, "Coming soon."),
         h("p", {}, "This guest session hasn't happened yet. Its game will appear here after the talk."),
-        h("div", { class: "row center" }, h("button", { class: "btn primary", onclick: () => go(LIVE[0].id) }, `Play the ${LIVE[0].when} session`)))));
+        h("div", { class: "row center" }, h("button", { class: "btn primary", onclick: () => go(LIVE[0].id, null) }, `Open the ${LIVE[0].when} session`)))));
     return;
   }
   const box = h("div", { class: "game-box", "data-sid": s.id });
@@ -582,22 +621,92 @@ function buildSession(s) {
   note.value = store.get("note:" + s.id, "");
   const saved = h("div", { class: "saved", "aria-live": "polite" });
   let t; note.addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => { store.set("note:" + s.id, note.value); saved.textContent = "Saved"; setTimeout(() => saved.textContent = "", 1500); }, 400); });
+  const gameCard = h("div", { class: "gamecard" },
+    h("div", { class: "gamecard-head" },
+      h("div", {}, h("div", { class: "label" }, "The game"), h("h3", {}, s.gameName)),
+      h("span", { class: "pill", "data-best": s.id }, "")),
+    box);
+  const viewer = s.slides ? buildViewer(s) : null;
+  if (viewer) VIEWERS[s.id] = viewer;
+  const rounds = s.game.stages ? s.game.stages.map(st => st.name) : [s.gameName];
+  const choice = h("div", { class: "choice" },
+    s.slides ? h("button", { class: "choose", onclick: () => setMode("slides") },
+      h("div", { class: "art" }, paintSlide(h("div", { class: "slideimg" }), s.slides, 0)),
+      h("div", { class: "label" }, `${s.slides.count} slides`), h("h3", {}, "Revise the slides."), h("p", {}, "Go back through the talk at your own pace.")) : null,
+    h("button", { class: "choose", onclick: () => setMode("games") },
+      h("div", { class: "art games" }, rounds.map((r, k) => h("span", {}, h("i", {}, String(k + 1).padStart(2, "0")), r))),
+      h("div", { class: "label" }, rounds.length > 1 ? `${rounds.length} rounds` : "1 game"), h("h3", {}, "Play the games."), h("p", {}, "Test what you remember and beat your best score.")));
+  const segBtns = (s.slides ? ["slides", "games"] : ["games"]).map(m => h("button", { "data-mode": m, "aria-pressed": "false", onclick: () => setMode(m) }, m === "slides" ? "Slides" : "Games"));
+  const seg = h("div", { class: "segrow" }, h("div", { class: "seg", role: "group", "aria-label": "Slides or games" }, segBtns));
+  function setMode(m, quiet) {
+    mode[s.id] = m;
+    choice.hidden = !!m; seg.hidden = !m;
+    if (viewer) viewer.el.hidden = m !== "slides";
+    gameCard.hidden = m !== "games";
+    segBtns.forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (!quiet) setHash(s.id);
+  }
+  MODE_SET[s.id] = setMode;
+  setMode(null, true);
   panelsEl.append(h("section", { class: "panel", id: "panel-" + s.id, role: "tabpanel", "aria-labelledby": "tab-" + s.id, hidden: true },
     h("div", { class: "wrap" },
       h("div", { class: "s-hero" },
         h("div", { class: "eyebrow" }, `Session ${s.n} · ${s.when}`),
         h("h2", {}, s.topic),
         h("p", { class: "by" }, `${s.speaker} · ${s.org}`)),
-      h("div", { class: "gamecard" },
-        h("div", { class: "gamecard-head" },
-          h("div", {}, h("div", { class: "label" }, "The game"), h("h3", {}, s.gameName)),
-          h("span", { class: "pill", "data-best": s.id }, "")),
-        box),
+      choice, seg, viewer ? viewer.el : null, gameCard,
       h("div", { class: "duo" },
         h("div", {}, h("h4", {}, "Key takeaways."), h("ol", { class: "takeaways" }, s.takeaways.map(x => h("li", {}, x)))),
         h("div", {}, h("label", { for: "note-" + s.id }, h("h4", {}, "My reflection.")), note, saved)))));
   GAMES[s.game.type](box, s);
 }
+
+const mode = {}, MODE_SET = {}, VIEWERS = {};
+// Slides are stored as a few tall "sheet" images (perSheet slides stacked top to bottom); show one slide by positioning the sheet.
+function paintSlide(el, sl, k) {
+  const per = sl.perSheet, sheet = Math.floor(k / per), rows = Math.min(per, sl.count - sheet * per), row = k - sheet * per;
+  el.style.backgroundImage = `url("${sl.dir}/sheet-${sheet + 1}.jpg")`;
+  el.style.backgroundSize = `100% ${rows * 100}%`;
+  el.style.backgroundPosition = `0 ${rows > 1 ? row / (rows - 1) * 100 : 0}%`;
+  return el;
+}
+function buildViewer(s) {
+  const n = s.slides.count;
+  let cur = Math.min(n - 1, store.get("slide:" + s.id, 0));
+  const img = h("div", { class: "slideimg", role: "img" });
+  const prev = h("button", { class: "navbtn prev", "aria-label": "Previous slide", onclick: () => step(-1) }, "‹");
+  const next = h("button", { class: "navbtn next", "aria-label": "Next slide", onclick: () => step(1) }, "›");
+  const screen = h("div", { class: "screen" }, img, prev, next);
+  const count = h("div", { class: "count", "aria-live": "polite" });
+  const thumbs = Array.from({ length: n }, (_, k) => h("button", { "aria-label": `Slide ${k + 1}`, onclick: () => show(k) }, paintSlide(h("div", { class: "slideimg" }), s.slides, k)));
+  let x0 = null;
+  screen.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, { passive: true });
+  screen.addEventListener("touchend", e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) step(dx < 0 ? 1 : -1); x0 = null; });
+  function show(k) {
+    cur = Math.max(0, Math.min(n - 1, k));
+    paintSlide(img, s.slides, cur); img.setAttribute("aria-label", `Slide ${cur + 1} of ${n}`);
+    prev.disabled = cur === 0; next.disabled = cur === n - 1;
+    count.replaceChildren("Slide ", h("b", {}, cur + 1), ` of ${n}`);
+    thumbs.forEach((t, j) => t.setAttribute("aria-current", j === cur));
+    thumbs[cur].scrollIntoView({ block: "nearest", inline: "nearest" });
+    store.set("slide:" + s.id, cur);
+  }
+  function step(d) { show(cur + d); }
+  const full = h("button", { class: "btn small", onclick: () => { const r = screen.requestFullscreen && screen.requestFullscreen(); if (r && r.catch) r.catch(() => {}); } }, "Full screen");
+  const el = h("div", { class: "viewer", hidden: true }, screen,
+    h("div", { class: "vbar" }, count, h("div", { class: "row" }, full, s.slides.pdf ? h("a", { class: "btn small", href: s.slides.pdf, download: "" }, "Download PDF") : null)),
+    h("div", { class: "thumbs", "aria-label": "All slides" }, thumbs));
+  show(cur);
+  return { el, step };
+}
+document.addEventListener("keydown", e => {
+  if ((e.target.closest && e.target.closest("textarea, input, .tabs")) || e.metaKey || e.ctrlKey || e.altKey) return;
+  const id = store.get("tab", "home");
+  if (mode[id] !== "slides" || !VIEWERS[id]) return;
+  if (e.key === "ArrowRight" || e.key === "ArrowDown" || (e.key === " " && !(e.target.closest && e.target.closest("button")))) { e.preventDefault(); VIEWERS[id].step(1); }
+  if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); VIEWERS[id].step(-1); }
+});
+function setHash(id) { try { history.replaceState(null, "", "#" + id + (mode[id] ? "/" + mode[id] : "")); } catch (e) {} }
 
 function refreshStatus() {
   const done = LIVE.filter(s => progress[s.id] && progress[s.id].done).length;
@@ -607,12 +716,13 @@ function refreshStatus() {
   drawTiles();
 }
 
-function go(id) {
+function go(id, m) {
   if (!ids.includes(id)) id = "home";
+  if (MODE_SET[id] && m !== undefined) MODE_SET[id](m, true);
   document.querySelectorAll(".panel").forEach(p => p.hidden = p.id !== "panel-" + id);
   document.querySelectorAll(".tab").forEach(t => { const on = t.dataset.id === id; t.setAttribute("aria-selected", on); t.tabIndex = on ? 0 : -1; if (on) t.scrollIntoView({ block: "nearest", inline: "nearest" }); });
-  try { history.replaceState(null, "", "#" + id); } catch (e) {}
   store.set("tab", id);
+  setHash(id);
   window.scrollTo({ top: 0 });
 }
 $("#brand").addEventListener("click", () => go("home"));
@@ -632,8 +742,8 @@ function resetButton() {
 function rebuild() {
   panelsEl.replaceChildren();
   buildTabs(); buildHome(); SESSIONS.forEach(buildSession); refreshStatus(); resetButton();
-  const hash = location.hash.replace("#", "");
-  go(ids.includes(hash) ? hash : store.get("tab", "home"));
+  const [hid, hm] = location.hash.replace("#", "").split("/");
+  go(ids.includes(hid) ? hid : store.get("tab", "home"), ["slides", "games"].includes(hm) ? hm : null);
 }
 rebuild();
 </script>
