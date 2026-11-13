@@ -334,7 +334,57 @@ const SESSIONS = [
       ]}}
     ]}
   },
-  { id: "s2", n: 2, soon: true },
+  {
+    id: "aimt", n: 2, when: "30 Oct", short: "AI marketing team",
+    speaker: "Nick Goh", org: "Yellow Pages × ESSEC",
+    topic: "Building an AI marketing team.", gameName: "Brief to Big Idea",
+    blurb: "A lite agentic workflow with Claude: six AI roles take a brief all the way to scored key visuals, using a fictional Louis Vuitton “Terra” launch. Revise the 55 slides, then play three rounds.",
+    slides: { dir: "slides/ai-marketing-team/ai-marketing-team", count: 55, perSheet: 8 },
+    takeaways: [
+      "Split the work into a planning team (Brief Writer, Brief Validator, Strategist) and a production team (Designer / Art Director, Copywriter, Reviewer), each with one clear output.",
+      "Each role is a Claude Skill inside one Project that holds the brand guide, research and briefs as shared context.",
+      "Validate in a fresh chat: a new conversation judges the brief without the assumptions made while drafting it.",
+      "Automate the start: a daily scheduled task picks up the latest “Marketing Brief” email and runs the Brief Builder.",
+      "Mark gaps as [to confirm] instead of inventing figures or material claims.",
+      "One sharp insight drives everything: “she wants a bag she never has to justify” became the Big Idea “Nothing to Explain”.",
+      "Keep a human in the loop: you approve the strategy, and AI should not fake a real person's likeness or endorsement.",
+      "Score the creative: the craft close-up (hand on the clasp, 6.7/10) beat the generic desert shot (4.3/10)."
+    ],
+    game: { type: "stages", stages: [
+      { name: "Who delivers what?", game: { type: "memory", pairs: [
+        ["Brief Writer", "Draft brief from the Project context"],
+        ["Brief Validator", "Verdict and top fixes, from a fresh chat"],
+        ["Strategist", "Big Idea one-pager"],
+        ["Designer / Art Director", "Key visual concepts and assets"],
+        ["Copywriter", "Channel-by-channel copy"],
+        ["Reviewer", "Edits and sign-off against brand voice"]
+      ]}},
+      { name: "The handoff chain", game: { type: "order", intro: "Tap the steps in the order the AI marketing team runs them, from the email that starts it to the scored creative.", steps: [
+        "A daily scheduled task picks up the latest “Marketing Brief” email",
+        "Brief Writer drafts the brief from the Project context",
+        "Brief Validator critiques it in a fresh chat",
+        "The brief is revised: clear metrics, objectives and channels",
+        "Researcher-Strategist finds the insight and shapes the Big Idea",
+        "You approve it and save it to the Project knowledge base",
+        "Copywriter builds the messaging hierarchy, Designer turns it into key visuals",
+        "Creative Review Scorer rates the work against the brief and strategy"
+      ]}},
+      { name: "Strategy & judgement", game: { type: "quiz", questions: [
+        { q: "Why does the Brief Validator review the brief in a new chat?", a: ["It's cheaper", "Fresh eyes: it judges the brief without the drafting conversation's assumptions", "Claude can't read old chats", "Gmail requires it"], c: 1, e: "A new chat stops the validator from inheriting the writer's reasoning, so it critiques the brief as a reader would." },
+        { q: "What starts the workflow without anyone typing a prompt?", a: ["A Vercel deploy", "A scheduled task that checks Gmail for the latest “Marketing Brief” email and runs the Marketing Brief Builder", "A pull request", "The Reviewer"], c: 1, e: "The scheduled task runs daily, finds the labelled email and runs the brief-builder skill on it." },
+        { q: "The brief doesn't state the exact budget. What should the agent do?", a: ["Invent a typical number", "Leave it out silently", "Mark it [to confirm] and list it as an open question", "Stop the whole workflow"], c: 2, e: "Gaps are flagged as placeholders, never made up. The draft brief ended with a list of open questions." },
+        { q: "Which four things does the Brief Validator check?", a: ["Logo, font, colour, layout", "Objective, audience, message, metric", "Price, place, product, promotion", "Budget, team, tools, timing"], c: 1, e: "Its output is a verdict plus the top fixes. Here: define success metrics, make consideration the primary objective, and tie channels to messages." },
+        { q: "What “hidden motivation truth” did the research find?", a: ["She wants the cheapest luxury bag", "She doesn't want a sustainable bag; she wants a bag she never has to justify", "She only buys bags seen on TikTok", "She wants a bag that looks recycled"], c: 1, e: "Beauty is the reason to buy; verified materials are the permission. That truth shaped the Big Idea." },
+        { q: "In the Big Idea, “Nothing to Explain” is the…", a: ["Stance", "Visual territory", "Proof pillar", "Hashtag"], c: 0, e: "Nothing to Explain is the stance, The Art of Renewal is the visual territory, and Made to Be Kept is the proof pillar." },
+        { q: "Which connector gave the strategist social-listening data on luxury brands?", a: ["Higgsfield", "SOMIN", "Gmail", "Supabase"], c: 1, e: "SOMIN supplied posts and engagement data. Web search filled in competitor context, with unverified points marked [to verify]." },
+        { q: "Which tool did the Designer use to generate the key visuals?", a: ["SOMIN", "Gmail", "Higgsfield", "GitHub"], c: 2, e: "The KV Concept Builder used the Higgsfield connector for images. Higgsfield Cinema Studio was then used for the video shots." },
+        { q: "Asked to put a real LV ambassador's face on the generated model, Claude declined. Why?", a: ["The image was too large", "A realistic image of a real person would imply an endorsement she never gave", "Faces can't be generated", "The brief banned models"], c: 1, e: "Using a real person's likeness without consent can mislead and infringe their rights. Claude offered an invented model instead." },
+        { q: "Which piece of creative scored highest with the Creative Review Scorer?", a: ["The 3-frame Instagram Story (5.7/10)", "The desert feed post (4.3/10)", "The hand-on-the-clasp close-up (6.7/10)", "They all scored the same"], c: 2, e: "Scored through BBH, Ogilvy and McCann lenses, the craft close-up came out on top." },
+        { q: "So what does the higher score tell you?", a: ["More AI tools always mean better work", "A specific, craft-led moment tied to the insight beats a generic luxury-in-the-desert image", "Desert settings are banned in luxury", "Scores are random"], c: 1, e: "The clasp shot carries desire and anticipation and shows the craft. The desert shot was pretty but generic." },
+        { q: "Where does the shared context (brand guide, research, briefs) for every agent live?", a: ["In each prompt, pasted by hand", "In a Claude Project with instructions, context files and memory", "In a spreadsheet", "In the Reviewer's head"], c: 1, e: "The “LVMH AI Marketing Team” Project held 28 context files, instructions, memory and the scheduled task." }
+      ]}}
+    ]}
+  },
   { id: "s3", n: 3, soon: true },
   { id: "s4", n: 4, soon: true },
   { id: "s5", n: 5, soon: true },
