@@ -7,7 +7,8 @@ A website for the Digital Platforms module with one tab per guest speaker sessio
 | # | Date | Speaker | Topic | Game |
 |---|------|---------|-------|------|
 | 1 | 9 Oct | Nirvan, Yibo & Rishabh (LaunchLab × ESSEC) | Vibe coding: design, build, deploy | 31 slides + Ship It: order the workflow, sort tasks into HTML/CSS/JS, Git & deploy quiz |
-| 2–6 | – | – | Coming soon | – |
+| 2 | 30 Oct | Nick Goh (Yellow Pages × ESSEC) | Building an AI marketing team | 55 slides + Brief to Big Idea: match roles to outputs, order the handoff chain, strategy & judgement quiz |
+| 3–6 | – | – | Coming soon | – |
 
 ## How it works
 
