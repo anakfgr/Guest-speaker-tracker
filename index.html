@@ -235,6 +235,9 @@ textarea:focus { border-color: var(--flare); outline: none; }
 @media (max-width: 760px) { .dir-hero { grid-template-columns: 1fr; } }
 .dir-hero h2 { font-size: clamp(76px, 14vw, 180px); line-height: .82; }
 .dir-hero .role { font-size: clamp(19px, 2.2vw, 24px); margin-top: 16px; max-width: 40ch; }
+.dir-hero .surname { display: block; font-style: italic; color: transparent; -webkit-text-stroke: 2px var(--flare); font-size: .52em; line-height: .95; margin-top: 6px; }
+.dir-hero .bio { color: var(--muted); margin-top: 14px; max-width: 58ch; font-size: 17px; }
+.dir-hero .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .badge { width: min(250px, 100%); background: var(--paper); color: var(--paper-ink); border-radius: 12px; padding: 18px; transform: rotate(-2deg); box-shadow: 0 30px 60px rgba(0, 0, 0, .45); }
 .badge .top { background: var(--paper-ink); color: var(--paper); font-family: var(--display); font-weight: 800; letter-spacing: .14em; text-transform: uppercase; text-align: center; padding: 6px; border-radius: 6px; font-size: 15px; }
 .badge .nm { font-family: var(--display); font-weight: 800; font-size: 46px; text-transform: uppercase; text-align: center; margin: 14px 0 4px; line-height: .9; }
@@ -694,9 +697,11 @@ const GAMES = {
    ===================================================================== */
 const LECTURER = {
   name: "Madina",
-  role: "Lecturer, Digital Platforms",
-  // Add more details here: a line about her, what she teaches, a thank-you.
-  bio: "",
+  surname: "Kalyayeva",
+  role: "Lecturer, ESSEC Business School · Asia-Pacific",
+  bio: "Global marketing and communications leader with more than 15 years across luxury, fashion and beauty, hospitality and aviation, from the UK and the Middle East to Singapore. She leads the creative agency Tilt in Singapore, teaches two modules on ESSEC's Master in Marketing Management & Digital, and mentors emerging talent across the region.",
+  tags: ["Luxury brand management", "Creative storytelling", "Industry speaker & moderator", "Asia's Top 100 Business Leaders"],
+  link: "https://www.linkedin.com/in/madinak/",
   thanks: "Thank you for setting the course this semester."
 };
 const CP_KM = [14, 31, 47, 62, 78, 90];   // where each checkpoint sits, in km
@@ -1000,11 +1005,13 @@ function buildDirector() {
       h("div", { class: "dir-hero" },
         h("div", {},
           h("div", { class: "mono" }, "Race director"),
-          h("h2", { style: "margin-top:12px" }, L.name),
+          h("h2", { style: "margin-top:12px" }, L.name, L.surname ? h("span", { class: "surname" }, L.surname) : null),
           h("p", { class: "role" }, L.role),
-          L.bio ? h("p", { style: "color:var(--muted);margin-top:14px;max-width:56ch" }, L.bio) : null),
+          L.bio ? h("p", { class: "bio" }, L.bio) : null,
+          L.tags ? h("div", { class: "tags" }, L.tags.map(x => h("span", { class: "pill" }, x))) : null,
+          L.link ? h("a", { class: "btn", href: L.link, target: "_blank", rel: "noopener", style: "margin-top:22px" }, "LinkedIn profile ↗") : null),
         h("div", { class: "badge" }, h("div", { class: "top" }, "Race director"), h("div", { class: "nm" }, L.name), h("div", { class: "sm" }, "Digital Platforms Ultra · ESSEC"))),
-      h("div", { class: "course-card", style: "margin-top:26px" },
+      h("div", { class: "course-card", style: "margin-top:34px" },
         h("div", { class: "row spread" }, h("h3", { style: "font-size:34px" }, "The course she set"), h("span", { class: "mono" }, `${LIVE.length} of ${SESSIONS.length} checkpoints open`)),
         h("ul", {}, SESSIONS.map(s => h("li", {}, h("b", {}, "CP" + s.n), h("span", { style: s.soon ? "color:var(--muted)" : "" }, s.soon ? "Opens after the talk" : `${s.topic.replace(/\.$/, "")} · ${s.speaker}`), h("span", { class: "mono" }, s.soon ? "—" : s.when)))),
         L.thanks ? h("p", { style: "font-size:19px;margin-top:6px" }, L.thanks) : null))));
